@@ -12,4 +12,4 @@
 
 No file body is copied into output reports. User-provided names and JSON field paths can appear in output. No browser, downloaded code, customer account or model is used by the checker.
 
-Cloud Actor: https://console.apify.com/actors/9GmfAyI0DFy5PSnjs . Two successful builds and four runs, including one repeated passing input before the failing input was applied. Store publication is pending acceptance of the Store publishing terms; this is still a private Actor. No monetization is enabled.
+Cloud Actor: https://console.apify.com/actors/9GmfAyI0DFy5PSnjs . Two successful builds and four runs, including one repeated passing input before the failing input was applied. Store publication is verified at https://apify.com/grayt/delivery-check after user agreement to the publishing terms. No developer monetization is enabled.
