@@ -69,7 +69,7 @@ The local CLI reads only the input file you explicitly pass; the core never open
 
 Import this repository through My Actors → Connect Git. The `.actor` folder includes Dockerfile and input/output schemas. Start with `examples/pass.json`, then `examples/fail.json`; inspect OUTPUT and the dataset for the expected statuses. Use limited permissions, 256 MiB memory and a 60-second run timeout. No recurring schedule or Standby mode is needed.
 
-This prototype does not emit paid events or claim agentic-payment eligibility. Any listing initially uses pay-per-usage (platform runtime costs only, no developer event charge). Charging for service events and payout onboarding are separate steps. Recheck actual usage before setting prices.
+The hosted listing uses pay-per-event pricing, active September 11, 2026: $0.01 for one completed PASS or FAIL report (up to 32 files), plus $0.00005 per Actor start at the fixed 256 MiB memory setting. Platform usage is included. INVALID_SPEC writes diagnostics to OUTPUT but no dataset row, so only the start fee applies. The report charge uses Apify's synthetic default-dataset-item event; no additional custom report event is charged. Check the live Store pricing before running. The local CLI remains MIT licensed and has no service fee.
 
 ## Implementation
 
@@ -91,4 +91,4 @@ https://mcp.apify.com?tools=grayt/delivery-check
 
 Use `fetch-actor-details` with `actor: "grayt/delivery-check"` on the general Apify MCP server to inspect the input contract first. After a run, use the returned dataset ID with `get-dataset-items`. If the dataset is empty, retrieve the `OUTPUT` record from the run's default key-value store for invalid-input diagnostics. Cloud storage and runtime usage still apply.
 
-On 2026-09-11, public MCP discovery returned this Actor's input and inferred output schemas. Authenticated MCP execution and paid calls have not been tested. MCP access does not by itself enable developer monetization or payouts.
+On 2026-09-11, public MCP discovery returned this Actor's input and inferred output schemas. The listing now exposes PAY_PER_EVENT pricing through MCP. Authenticated MCP execution and external paid calls have not been tested; no customer revenue or payout is claimed.

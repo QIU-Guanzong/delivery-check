@@ -1,8 +1,8 @@
 {
   "actorSpecification": 1,
   "name": "delivery-check",
-  "title": "Delivery Check — File Bundle Validator",
-  "description": "Check required text files, sizes, SHA-256, JSON contracts and CSV headers before submission. Clear results without AI calls.",
+  "title": "Delivery Check — JSON & CSV File Validator",
+  "description": "Validate JSON, CSV and text files before delivery. Check required files, JSON schemas, CSV headers and row counts, byte limits and SHA-256 hashes. Get a PASS/FAIL report for up to 32 files. No model calls.",
   "version": "0.1",
   "usesStandbyMode": false,
   "defaultMemoryMbytes": 256,
