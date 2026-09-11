@@ -1,0 +1,103 @@
+{
+  "version": "0.1.0",
+  "status": "PASS",
+  "totalBytes": 88,
+  "issues": [],
+  "files": [
+    {
+      "name": "result.json",
+      "kind": "json",
+      "checks": [
+        {
+          "code": "PRESENT",
+          "passed": true
+        },
+        {
+          "code": "UTF8_TEXT",
+          "passed": true
+        },
+        {
+          "code": "MAX_BYTES",
+          "passed": true
+        },
+        {
+          "code": "JSON_PARSE",
+          "passed": true
+        },
+        {
+          "code": "JSON_SCHEMA",
+          "passed": true
+        }
+      ],
+      "bytes": 21,
+      "sha256": "dd374af7e3d00d3e395e4a6a2ff9359f7f02af33e45f7cfe333a96a642ebc8ce",
+      "status": "PASS"
+    },
+    {
+      "name": "records.csv",
+      "kind": "csv",
+      "checks": [
+        {
+          "code": "PRESENT",
+          "passed": true
+        },
+        {
+          "code": "UTF8_TEXT",
+          "passed": true
+        },
+        {
+          "code": "MAX_BYTES",
+          "passed": true
+        },
+        {
+          "code": "CSV_PARSE",
+          "passed": true
+        },
+        {
+          "code": "CSV_HEADERS",
+          "passed": true
+        },
+        {
+          "code": "MIN_ROWS",
+          "passed": true
+        },
+        {
+          "code": "MAX_ROWS",
+          "passed": true
+        }
+      ],
+      "bytes": 22,
+      "sha256": "2e9f445b06e5ca0fb9638798078f6a239ea1fcace10e1dcfb70ceb3a3322ad44",
+      "rows": 2,
+      "status": "PASS"
+    },
+    {
+      "name": "test-report.md",
+      "kind": "text",
+      "checks": [
+        {
+          "code": "PRESENT",
+          "passed": true
+        },
+        {
+          "code": "UTF8_TEXT",
+          "passed": true
+        },
+        {
+          "code": "MAX_BYTES",
+          "passed": true
+        }
+      ],
+      "bytes": 45,
+      "sha256": "2cf8959788e9eeca134d59a9472b64902ac003de19f1d6dfaba80d77b8400042",
+      "status": "PASS"
+    }
+  ],
+  "notChecked": [
+    "content truthfulness",
+    "subjective acceptance",
+    "malware analysis",
+    "HTML rendering/accessibility",
+    "payment eligibility"
+  ]
+}

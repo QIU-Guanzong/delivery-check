@@ -1,0 +1,7 @@
+{
+  "requirements": [
+    {"name":"result.json","kind":"json","maxBytes":10000,"jsonSchema":{"type":"object","required":["count"],"properties":{"count":{"type":"integer"}}}},
+    {"name":"test-report.md","kind":"text","maxBytes":10000}
+  ],
+  "files": [{"name":"result.json","content":"{\"count\":\"two\"}"}]
+}

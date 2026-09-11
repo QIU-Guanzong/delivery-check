@@ -1,0 +1,60 @@
+{
+  "version": "0.1.0",
+  "status": "FAIL",
+  "totalBytes": 15,
+  "issues": [],
+  "files": [
+    {
+      "name": "result.json",
+      "kind": "json",
+      "checks": [
+        {
+          "code": "PRESENT",
+          "passed": true
+        },
+        {
+          "code": "UTF8_TEXT",
+          "passed": true
+        },
+        {
+          "code": "MAX_BYTES",
+          "passed": true
+        },
+        {
+          "code": "JSON_PARSE",
+          "passed": true
+        },
+        {
+          "code": "JSON_SCHEMA",
+          "passed": false
+        }
+      ],
+      "bytes": 15,
+      "sha256": "73a3385f5734be4c1b18d779deb1205759f1b259db63034a8d6a781ae1f1c1e8",
+      "schemaError": {
+        "path": "/count",
+        "keyword": "type",
+        "message": "must be integer"
+      },
+      "status": "FAIL"
+    },
+    {
+      "name": "test-report.md",
+      "kind": "text",
+      "checks": [
+        {
+          "code": "PRESENT",
+          "passed": false
+        }
+      ],
+      "status": "FAIL"
+    }
+  ],
+  "notChecked": [
+    "content truthfulness",
+    "subjective acceptance",
+    "malware analysis",
+    "HTML rendering/accessibility",
+    "payment eligibility"
+  ]
+}

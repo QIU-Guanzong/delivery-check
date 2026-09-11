@@ -1,0 +1,36 @@
+{
+  "version": "0.1.0",
+  "status": "PASS",
+  "totalBytes": 6280,
+  "issues": [],
+  "files": [
+    {
+      "name": "rgb-to-hex.html",
+      "kind": "text",
+      "checks": [
+        {
+          "code": "PRESENT",
+          "passed": true
+        },
+        {
+          "code": "UTF8_TEXT",
+          "passed": true
+        },
+        {
+          "code": "MAX_BYTES",
+          "passed": true
+        }
+      ],
+      "bytes": 6280,
+      "sha256": "f8fd8f7d2720ecbdd70a5093cd80217e9b9b641f785edff8c4a329f16f846800",
+      "status": "PASS"
+    }
+  ],
+  "notChecked": [
+    "content truthfulness",
+    "subjective acceptance",
+    "malware analysis",
+    "HTML rendering/accessibility",
+    "payment eligibility"
+  ]
+}

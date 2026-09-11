@@ -1,0 +1,7 @@
+{
+  "name": "delivery-check", "version": "0.1.0", "private": true,
+  "description": "Deterministic pre-submission checks for small text delivery bundles.",
+  "type": "module", "engines": {"node": ">=22 <25"},
+  "scripts": {"start": "node src/actor.js", "check": "node src/cli.js", "test": "node --test"},
+  "dependencies": {"ajv": "8.20.0", "csv-parse": "7.0.2", "apify": "3.7.2"}
+}

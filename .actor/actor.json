@@ -1,0 +1,14 @@
+{
+  "actorSpecification": 1,
+  "name": "delivery-check",
+  "title": "Delivery Check — File Bundle Validator",
+  "description": "Check required text files, sizes, SHA-256, JSON contracts and CSV headers before submission. Clear results without AI calls.",
+  "version": "0.1",
+  "usesStandbyMode": false,
+  "defaultMemoryMbytes": 256,
+  "minMemoryMbytes": 256,
+  "maxMemoryMbytes": 256,
+  "dockerfile": "./Dockerfile",
+  "input": "./input_schema.json",
+  "output": "./output_schema.json"
+}

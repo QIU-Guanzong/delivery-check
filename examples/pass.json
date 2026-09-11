@@ -1,0 +1,12 @@
+{
+  "requirements": [
+    {"name":"result.json","kind":"json","maxBytes":10000,"jsonSchema":{"type":"object","required":["ok","count"],"properties":{"ok":{"type":"boolean"},"count":{"type":"integer","minimum":0}},"additionalProperties":false}},
+    {"name":"records.csv","kind":"csv","maxBytes":10000,"csv":{"headers":["id","name"],"minRows":2,"maxRows":2}},
+    {"name":"test-report.md","kind":"text","maxBytes":10000}
+  ],
+  "files": [
+    {"name":"result.json","content":"{\"ok\":true,\"count\":2}"},
+    {"name":"records.csv","content":"id,name\n1,Alice\n2,Bob\n"},
+    {"name":"test-report.md","content":"# Test record\nTwo synthetic records checked.\n"}
+  ]
+}
