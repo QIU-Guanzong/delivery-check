@@ -2,7 +2,10 @@
   "actorOutputSchemaVersion": 1,
   "title": "Delivery check report",
   "properties": {
-    "report": { "type": "string", "title": "Full report", "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/OUTPUT" },
-    "dataset": { "type": "string", "title": "Results", "template": "{{links.apiDefaultDatasetUrl}}/items" }
+    "dataset": {
+      "type": "string",
+      "title": "Validation results",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
   }
 }
