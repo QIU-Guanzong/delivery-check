@@ -13,3 +13,7 @@
 No file body is copied into output reports. User-provided names and JSON field paths can appear in output. No browser, downloaded code, customer account or model is used by the checker.
 
 Cloud Actor: https://console.apify.com/actors/9GmfAyI0DFy5PSnjs . Two successful builds and four runs, including one repeated passing input before the failing input was applied. Store publication is verified at https://apify.com/grayt/delivery-check after user agreement to the publishing terms. No developer monetization is enabled.
+
+## HTTP adapter (2026-09-11)
+
+All 26 tests pass under Node 24.19.0: 21 core checks plus 5 HTTP tests using real loopback requests. HTTP checks cover missing/wrong gateway secret, PASS/FAIL reports, invalid contract/JSON/media and declared/chunked body limits. Adapter binds to loopback by default, has request timeouts and requires gateway secret configuration. RapidAPI public forwarding, public TLS, quotas, load and billing are not yet verified. No backend is deployed.

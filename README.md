@@ -76,3 +76,7 @@ This prototype does not emit paid events or claim agentic-payment eligibility. A
 `src/check.js` is reusable without Apify. `src/cli.js` reads one JSON input. `src/actor.js` adapts the same checker to Apify. An ACP adapter could call the same function later; ACP integration is not included in this release.
 
 MIT licensed. Runtime dependencies are pinned in package-lock.json. AJV validates contracts; csv-parse handles quoted CSV; the Apify SDK stores Actor outputs. See [test evidence](TEST_REPORT.md) for the checks actually run.
+
+## HTTP API adapter
+
+An optional HTTP adapter and OpenAPI import are in [rapidapi](rapidapi/README.md). Local integration tests pass; no RapidAPI public backend or monetized listing is deployed. The Apify entry point is unchanged.
