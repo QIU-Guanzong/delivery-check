@@ -59,7 +59,7 @@ JSON schemas are limited to 16,000 characters and 12 schema levels. Common type,
 
 The report separates `PASS`, `FAIL` and `INVALID_SPEC`. Each required file lists checks, byte size and SHA-256. JSON schema failures include the offending field path and rule. Reports do not echo whole file bodies, but names, hashes and field paths may still be sensitive.
 
-See [sample output](examples/pass-report.json) and [failure output](examples/fail-report.json). On Apify, the full report is saved as key-value record `OUTPUT`; a one-row dataset summary includes the per-file checks. A successful Actor run can contain a FAIL report: the checker ran successfully and found a failed delivery. Check the report's status rather than the Actor process status.
+See [sample output](examples/pass-report.json) and [failure output](examples/fail-report.json). On Apify, the full report is saved as key-value record `OUTPUT`; PASS and FAIL produce one dataset row with the per-file checks. INVALID_SPEC produces no dataset row; read `OUTPUT` for its diagnostics. A successful Actor run can contain a FAIL report: the checker ran successfully and found a failed delivery. Check the report's status rather than the Actor process status.
 
 ## Privacy and cloud use
 
@@ -80,3 +80,15 @@ MIT licensed. Runtime dependencies are pinned in package-lock.json. AJV validate
 ## HTTP API adapter
 
 An optional HTTP adapter and OpenAPI import are in [rapidapi](rapidapi/README.md). Local integration tests pass; no RapidAPI public backend or monetized listing is deployed. The Apify entry point is unchanged.
+
+## Use from an MCP client
+
+The hosted [Apify MCP server](https://github.com/apify/apify-mcp-server) can expose this Actor directly. Use this server URL with a compatible client and authenticate with your own Apify account through OAuth:
+
+```text
+https://mcp.apify.com?tools=grayt/delivery-check
+```
+
+Use `fetch-actor-details` with `actor: "grayt/delivery-check"` on the general Apify MCP server to inspect the input contract first. After a run, use the returned dataset ID with `get-dataset-items`. If the dataset is empty, retrieve the `OUTPUT` record from the run's default key-value store for invalid-input diagnostics. Cloud storage and runtime usage still apply.
+
+On 2026-09-11, public MCP discovery returned this Actor's input and inferred output schemas. Authenticated MCP execution and paid calls have not been tested. MCP access does not by itself enable developer monetization or payouts.

@@ -17,3 +17,9 @@ Cloud Actor: https://console.apify.com/actors/9GmfAyI0DFy5PSnjs . Two successful
 ## HTTP adapter (2026-09-11)
 
 All 26 tests pass under Node 24.19.0: 21 core checks plus 5 HTTP tests using real loopback requests. HTTP checks cover missing/wrong gateway secret, PASS/FAIL reports, invalid contract/JSON/media and declared/chunked body limits. Adapter binds to loopback by default, has request timeouts and requires gateway secret configuration. RapidAPI public forwarding, public TLS, quotas, load and billing are not yet verified. No backend is deployed.
+
+## Apify report row guard and MCP discovery (2026-09-11)
+
+All 29 tests pass on Node 24.19.0. Three new real local SDK subprocess tests inspect persisted storage: PASS/FAIL each create one dataset row, INVALID_SPEC creates zero rows and preserves diagnostics in OUTPUT. The initial test harness incorrectly set APIFY_IS_AT_HOME=0 (the SDK treats any nonempty value as cloud mode); removing that variable fixed the harness. No cloud credentials were used. This is storage behavior evidence, not a paid billing test.
+
+The official hosted MCP server returned grayt/delivery-check via fetch-actor-details, including its input and inferred output schemas. Public pricing was FREE; users displayed 2 total / 1 monthly, which does not prove customers or revenue. A delivery-check keyword search did not return our Actor. Discovery used only free search/details operations, no wallet, prepayment, or Actor execution. This revision has not yet been built or verified in the cloud.
