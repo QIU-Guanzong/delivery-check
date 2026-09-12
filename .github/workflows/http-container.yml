@@ -1,0 +1,15 @@
+name: HTTP container verification
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Build HTTP image
+        run: docker build -f rapidapi/Dockerfile -t delivery-check-api:test .
+      - name: Verify container boundary and responses
+        run: python3 rapidapi/container_smoke.py
