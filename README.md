@@ -6,7 +6,9 @@ For developers and agents handing off text deliverables. The checker uses determ
 
 ## Offline browser preview
 
-Download `delivery-check.html` from the browser-preview release, or build it locally:
+[Download the browser preview](https://github.com/QIU-Guanzong/delivery-check/releases/download/browser-preview-0.1.0/delivery-check.html) · [Release notes](https://github.com/QIU-Guanzong/delivery-check/releases/tag/browser-preview-0.1.0)
+
+Or build it locally:
 
 ```sh
 npm ci
