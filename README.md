@@ -4,7 +4,17 @@ Check a small bundle before you submit it. Catch missing evidence, oversized fil
 
 For developers and agents handing off text deliverables. The checker uses deterministic rules, with no model calls or external URL requests. A PASS means the supplied files meet the configured checks; it does not mean a customer accepted the work or that its content is true.
 
-## Quick start
+## Run online
+
+Open [Delivery Check on Apify](https://apify.com/grayt/delivery-check) to check a bundle without installing anything locally.
+
+1. Sign in to Apify and copy the [passing example](examples/pass.json) into the Actor's JSON input, or use the smaller input below. Replace the example with your own file contents and requirements when ready.
+2. Review the current Store pricing before starting. A completed PASS or FAIL report costs $0.01, plus the $0.00005 start fee at 256 MiB. Invalid input still incurs the start fee.
+3. Read the report's `status` and per-file checks in the dataset. For invalid-input diagnostics, open the `OUTPUT` record in the run's key-value store.
+
+Try the [failing example](examples/fail.json) to see how missing or incorrect files are reported. These examples use synthetic data. Cloud runs store your submitted input on Apify; use the local CLI below for files you need to keep on your own machine.
+
+## Run locally
 
 Requires Node.js 22 or 24 and npm.
 
@@ -73,7 +83,7 @@ The hosted listing uses pay-per-event pricing, active September 11, 2026: $0.01 
 
 ## Implementation
 
-`src/check.js` is reusable without Apify. `src/cli.js` reads one JSON input. `src/actor.js` adapts the same checker to Apify. An ACP adapter could call the same function later; ACP integration is not included in this release.
+`src/check.js` is reusable without Apify. `src/cli.js` reads one JSON input. `src/actor.js` adapts the same checker to Apify. A [local ACP handler prototype](acp/README.md) also reuses the checker; it is tested locally but has no deployed ACP offering or verified payment flow.
 
 MIT licensed. Runtime dependencies are pinned in package-lock.json. AJV validates contracts; csv-parse handles quoted CSV; the Apify SDK stores Actor outputs. See [test evidence](TEST_REPORT.md) for the checks actually run.
 
