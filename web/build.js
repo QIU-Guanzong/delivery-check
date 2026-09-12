@@ -1,0 +1,20 @@
+import { build } from 'esbuild';
+import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+const root = fileURLToPath(new URL('../',import.meta.url));
+const result = await build({absWorkingDir:root,entryPoints:['web/app.js'],bundle:true,write:false,minify:true,format:'iife',platform:'browser',target:['es2022'],alias:{'csv-parse/sync':'csv-parse/browser/esm/sync'},legalComments:'inline'});
+const script = result.outputFiles[0].text.replace(/<\/script/gi,'<\\/script');
+const css = await readFile(new URL('style.css',import.meta.url),'utf8');
+const hash = value => createHash('sha256').update(value).digest('base64');
+// AJV compiles bounded local schemas. Only the bundled script may execute; no network requests are allowed.
+const policy = `default-src 'none'; script-src 'sha256-${hash(script)}' 'unsafe-eval'; style-src 'sha256-${hash(css)}'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'`;
+let html = await readFile(new URL('index.html',import.meta.url),'utf8');
+html = html.replace('<!-- POLICY -->',`<meta http-equiv="Content-Security-Policy" content="${policy}">`).replace('/* STYLE */',()=>css).replace('/* APP */',()=>script);
+const licenseFiles = ['LICENSE','node_modules/ajv/LICENSE','node_modules/csv-parse/LICENSE','node_modules/@noble/hashes/LICENSE','node_modules/fast-deep-equal/LICENSE','node_modules/fast-uri/LICENSE','node_modules/json-schema-traverse/LICENSE','node_modules/require-from-string/license'];
+let notices = '';
+for (const name of licenseFiles) notices += `\n${name}\n${await readFile(root+name,'utf8')}\n`;
+html = html.replace('</body>',`<!-- Third-party and MIT license notices\n${notices.replace(/--/g,'—')}-->\n</body>`);
+await mkdir(root+'dist',{recursive:true});
+await writeFile(root+'dist/delivery-check.html',html);
+console.log(`Built dist/delivery-check.html (${Buffer.byteLength(html).toLocaleString()} bytes). No external assets.`);

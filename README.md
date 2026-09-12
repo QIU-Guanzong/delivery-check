@@ -4,6 +4,23 @@ Check a small bundle before you submit it. Catch missing evidence, oversized fil
 
 For developers and agents handing off text deliverables. The checker uses deterministic rules, with no model calls or external URL requests. A PASS means the supplied files meet the configured checks; it does not mean a customer accepted the work or that its content is true.
 
+## Offline browser preview
+
+Download `delivery-check.html` from the browser-preview release, or build it locally:
+
+```sh
+npm ci
+npm run build:web
+```
+
+Open `dist/delivery-check.html` in a modern browser. No server, account or internet connection is required. Select one CSV, JSON or UTF-8 text file (up to 1 MiB), or paste contents. Set expected CSV columns/row counts or an optional JSON Schema, then check and download the JSON report. The free local preview uses the same checker as the CLI; the CLI/API continue to support bundles of up to 32 files.
+
+This preview does not detect duplicate SKUs, check CSV business-field values, map Shopify columns or guarantee a platform import. Those are separate potential product extensions. No checkout, subscription, advertising, usage tracking or customer revenue is implemented in the preview.
+
+All assets and license notices are embedded in the HTML. The page has no network requests or application storage; its Content Security Policy blocks connections. AJV needs local dynamic code compilation for the bounded schema subset. Loaded file bytes preserve BOM and CRLF for hashing; editing the textarea changes the working content and its fingerprint. Invalid UTF-8 and oversized files are rejected. Clear removes the active file, rules and report.
+
+See [browser validation](web/VALIDATION.md). The published Apify cloud build and RapidAPI deployment status are separate from this local browser release.
+
 ## Run online
 
 Open [Delivery Check on Apify](https://apify.com/grayt/delivery-check) to check a bundle without installing anything locally.

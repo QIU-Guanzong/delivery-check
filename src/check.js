@@ -1,6 +1,9 @@
 import Ajv from 'ajv';
 import { parse } from 'csv-parse/sync';
-import { createHash } from 'node:crypto';
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex } from '@noble/hashes/utils.js';
+const encoder = new TextEncoder();
+const byteLength = value => encoder.encode(value).length;
 
 export const LIMITS = Object.freeze({ files: 32, fileBytes: 1_048_576, totalBytes: 4_194_304, inputBytes: 6_291_456 });
 const name = { type: 'string', minLength: 1, maxLength: 180, pattern: '^[A-Za-z0-9][A-Za-z0-9_. -]*$' };
@@ -52,13 +55,13 @@ function safeSchema(value) {
 
 export function checkBundle(input) {
   try {
-    if (!depth(input) || Buffer.byteLength(JSON.stringify(input) ?? '') > LIMITS.inputBytes) return invalid('INPUT_LIMIT', 'Input exceeds size or nesting limit.');
+    if (!depth(input) || byteLength(JSON.stringify(input) ?? '') > LIMITS.inputBytes) return invalid('INPUT_LIMIT', 'Input exceeds size or nesting limit.');
   } catch { return invalid('INPUT_LIMIT', 'Input must be a finite JSON document.'); }
   if (!validateInput(input)) return invalid('INPUT_SHAPE', `Invalid configuration at ${validateInput.errors[0].instancePath || '/'}.`);
   const names = values => values.map(v => v.name);
   if (new Set(names(input.requirements)).size !== input.requirements.length || new Set(names(input.files)).size !== input.files.length) return invalid('DUPLICATE_NAME', 'Each filename must be unique within its list.');
-  const bytes = input.files.reduce((sum, f) => sum + Buffer.byteLength(f.content), 0);
-  if (bytes > LIMITS.totalBytes || input.files.some(f => Buffer.byteLength(f.content) > LIMITS.fileBytes)) return invalid('INPUT_LIMIT', 'Decoded file content exceeds the bundle or file limit.');
+  const bytes = input.files.reduce((sum, f) => sum + byteLength(f.content), 0);
+  if (bytes > LIMITS.totalBytes || input.files.some(f => byteLength(f.content) > LIMITS.fileBytes)) return invalid('INPUT_LIMIT', 'Decoded file content exceeds the bundle or file limit.');
   const compiled = new Map();
   for (const r of input.requirements) {
     if ((r.jsonSchema !== undefined && r.kind !== 'json') || (r.csv !== undefined && r.kind !== 'csv')) return invalid('RULE_KIND', 'A JSON or CSV rule is attached to a different file kind.');
@@ -79,9 +82,9 @@ export function checkBundle(input) {
     const add = (code, passed) => result.checks.push({ code, passed });
     add('PRESENT', supplied.has(r.name));
     if (!supplied.has(r.name)) return { ...result, status: 'FAIL' };
-    const content = supplied.get(r.name), data = Buffer.from(content, 'utf8');
+    const content = supplied.get(r.name), data = encoder.encode(content);
     result.bytes = data.length;
-    result.sha256 = createHash('sha256').update(data).digest('hex');
+    result.sha256 = bytesToHex(sha256(data));
     add('UTF8_TEXT', !/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/u.test(content));
     add('MAX_BYTES', data.length <= r.maxBytes);
     if (r.sha256) add('SHA256_MATCH', result.sha256 === r.sha256.toLowerCase());

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <!-- POLICY -->
+  <meta name="description" content="Check CSV, JSON and text files before handoff. Runs locally in your browser, with a downloadable report.">
+  <title>Delivery Check — Know what you’re handing over</title>
+  <style>/* STYLE */</style>
+</head>
+<body>
+  <header><a class="brand" href="#"><span class="mark">✓</span> Delivery Check</a><span class="privacy"><span></span> Files stay on your device</span></header>
+  <main>
+    <section class="intro"><p class="eyebrow">A CLEARER HANDOFF</p><h1>Small file.<br>Fewer surprises.</h1><p>Check the structure before you send it.<br>CSV, JSON, or text. A clear result you can share.</p></section>
+    <div class="workspace">
+      <section class="panel" aria-labelledby="input-title">
+        <div class="section-heading"><h2 id="input-title"><span>01</span> Your file</h2><button id="reset" class="quiet" type="button">Clear</button></div>
+        <label class="file-picker" for="file"><strong>Choose a file</strong><span>CSV, JSON or UTF-8 text · up to 1 MiB</span><input type="file" id="file" accept=".csv,.json,.txt,.md,.log,.html,.xml,.yaml,.yml"></label>
+        <div class="sample-bar"><span>Just exploring?</span><button id="csv-example" class="quiet" type="button">Try CSV</button><button id="json-example" class="quiet" type="button">Try JSON</button></div>
+        <div class="two-fields"><label>File name<input id="filename" value="delivery.csv" maxlength="180" autocomplete="off" spellcheck="false"></label><label>Format<select id="kind"><option value="csv">CSV table</option><option value="json">JSON data</option><option value="text">Plain text</option></select></label></div>
+        <label>File contents <span class="hint">or paste your own</span><textarea id="content" rows="6" spellcheck="false" placeholder="Paste file contents here…"></textarea></label>
+        <p class="footnote" id="size">0 bytes · UTF-8</p>
+        <div class="section-heading rules-heading"><h2><span>02</span> What should it contain?</h2></div>
+        <div id="csv-rules"><label>Expected column names <span class="hint">one per line, in order</span><textarea id="headers" rows="3" spellcheck="false" placeholder="sku&#10;name&#10;price"></textarea></label><div class="two-fields"><label>Minimum data rows<input id="min-rows" type="number" min="0" max="100000" step="1" placeholder="Optional"></label><label>Maximum data rows<input id="max-rows" type="number" min="0" max="100000" step="1" placeholder="Optional"></label></div></div>
+        <div id="json-rules" hidden><label>JSON Schema <span class="hint">optional</span><textarea id="schema" rows="5" spellcheck="false" placeholder='{"type":"object","required":["id"]}'></textarea></label><p class="footnote">Checks syntax with no schema. Supported schema rules include types, required fields and value bounds.</p></div>
+        <details class="more-rules"><summary>Size &amp; fingerprint</summary><label>Maximum size in bytes<input id="max-bytes" type="number" min="1" max="1048576" step="1" value="1048576"></label><label>Expected SHA-256 <span class="hint">optional</span><input id="hash" maxlength="64" spellcheck="false" placeholder="A known file fingerprint"></label></details>
+        <p class="error" id="error" role="alert" hidden></p>
+        <button id="run" class="primary" type="button">Check file <span>↗</span></button>
+        <noscript>This tool needs JavaScript enabled. No files are uploaded.</noscript>
+      </section>
+      <section class="panel report-panel" aria-labelledby="report-title">
+        <div class="section-heading"><h2 id="report-title"><span>03</span> Your report</h2><span class="pill">LOCAL CHECK</span></div>
+        <div id="empty" class="empty"><div class="paper-icon">✓</div><h3>A little certainty<br>before you hit send.</h3><p>Choose a file and set its expected rules.<br>Your result will appear here.</p></div>
+        <div id="result" hidden aria-live="polite"><div id="result-banner"><p class="eyebrow" id="result-status"></p><h3 id="result-headline"></h3><p id="result-description"></p></div><dl id="file-summary"></dl><ul id="checks"></ul><button id="download" class="secondary" type="button">Download report ↓</button><p class="footnote">The report includes the file name, fingerprint and checks, but not the file contents. Share only what you intend to.</p><details><summary>Report details</summary><pre id="report-json"></pre></details></div>
+        <div class="scope"><strong>A structure check, with a clear scope.</strong><p>Checks file size, CSV columns and row counts, JSON syntax and optional schema, plus a file fingerprint. It does not verify factual accuracy, detect duplicate SKUs, scan for malware, or guarantee an import will succeed.</p></div>
+      </section>
+    </div>
+    <section class="how"><div><span>01 / PRIVATE</span><h3>Your files stay yours.</h3><p>No uploads, account, analytics, or stored history. Use Clear to remove working data from this page.</p></div><div><span>02 / PORTABLE</span><h3>Keep the result.</h3><p>Download a structured report to attach to your handoff or compare with a later delivery.</p></div><div><span>03 / OFFLINE</span><h3>One page. Ready to work.</h3><p>Save this HTML file and open it anytime. The checks run without an internet connection.</p></div></section>
+  </main>
+  <footer><span>Delivery Check · Preview 0.1</span><span>Free local tool · MIT licensed</span></footer>
+  <script>/* APP */</script>
+</body>
+</html>
