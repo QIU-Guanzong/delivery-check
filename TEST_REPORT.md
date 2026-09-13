@@ -2,9 +2,9 @@
 
 ## Latest local verification (2026-09-13)
 
-- `npm test`: 39 passed, 0 failed. This includes the core checker, HTTP adapter, ACP handler, local Apify adapter, and browser input validation tests.
+- `npm test`: 43 passed, 0 failed under Node 26.0.0. This includes the core checker, HTTP adapter, ACP handler, local Apify adapter, browser input validation, the Store prefill, and schema-valid dataset rows.
 - CLI sample input `examples/pass.json` returned `PASS` with exit code 0 during this review. Existing failure and edge-case behavior remains covered by the automated tests below.
-- This is local functional evidence only. It does not demonstrate buyer demand, account eligibility, an external paid run, or a payout.
+- Node 26 is outside the declared Node 22–24 support range, so this is local behavioral evidence only; a fresh Node 22 cloud build remains required before treating it as deployment evidence. It does not demonstrate buyer demand, account eligibility, an external paid run, or a payout.
 
 ## Prototype and platform history
 
@@ -42,4 +42,4 @@ Own-account invalid-input run ZynHh3jHWkJK3stEV logged INVALID_SPEC and produced
 
 ## Dataset view and Store prefill contract (2026-09-13)
 
-On the isolated `codex/apify-task-dataset-schema` branch, `npm test` passes 43/43. The local Apify SDK adapter now checks persisted PASS/FAIL rows against `.actor/dataset_schema.json` for minimal text, mixed JSON/CSV/text, JSON-schema failure, missing files, and unexpected files; INVALID_SPEC still produces no dataset row. The input-schema prefill is checked against the existing synthetic mixed-format PASS example. This verifies the local Actor contract and the dataset-view prerequisite for a possible task landing page; it is not an Apify cloud build, a published page, a user acceptance result, or paid-run evidence.
+The current source passes 43/43 local tests under Node 26.0.0. The local Apify SDK adapter now checks persisted PASS/FAIL rows against `.actor/dataset_schema.json` for minimal text, mixed JSON/CSV/text, JSON-schema failure, missing files, and unexpected files; INVALID_SPEC still produces no dataset row. The input-schema prefill is checked against the existing synthetic mixed-format PASS example. This verifies the local Actor contract and the dataset-view prerequisite for a possible task landing page; it is not a supported-runtime cloud build, a published page, a user acceptance result, or paid-run evidence.
