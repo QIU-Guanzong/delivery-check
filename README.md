@@ -112,7 +112,11 @@ The local CLI reads only the input file you explicitly pass; the core never open
 
 ## Apify deployment
 
-Import this repository through My Actors → Connect Git. The `.actor` folder includes Dockerfile and input/output schemas. Start with `examples/pass.json`, then `examples/fail.json`; inspect OUTPUT and the dataset for the expected statuses. Use limited permissions, 256 MiB memory and a 60-second run timeout. No recurring schedule or Standby mode is needed.
+Import this repository through My Actors → Connect Git. The `.actor` folder includes the Dockerfile, input/output schemas, and a dataset schema with a machine-readable result contract and `overview` view. Start with `examples/pass.json`, then `examples/fail.json`; inspect OUTPUT and the dataset for the expected statuses. Use limited permissions, 256 MiB memory and a 60-second run timeout. No recurring schedule or Standby mode is needed.
+
+The Store input form preloads the same synthetic JSON, CSV, and text PASS bundle used by the local example, so a first-time user can see all three advertised input types in one run.
+
+The dataset view also meets the dataset-schema prerequisite for a public Apify Task landing page. Publishing that page still requires creating and saving a complete task configuration in Apify Console; this repository change does not publish a task or alter the live Actor.
 
 The hosted listing uses pay-per-event pricing, active September 11, 2026: $0.01 for one completed PASS or FAIL report (up to 32 files), plus $0.00005 per Actor start at the fixed 256 MiB memory setting. Platform usage is included. INVALID_SPEC writes diagnostics to OUTPUT but no dataset row, so only the start fee applies. The report charge uses Apify's synthetic default-dataset-item event; no additional custom report event is charged. Check the live Store pricing before running. The local CLI remains MIT licensed and has no service fee.
 

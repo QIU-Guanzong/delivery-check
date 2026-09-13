@@ -39,3 +39,7 @@ Console billing gate cleared and monetization became Active with a September 11,
 Own-account run GqA95zaiwe0jN4VFi under build 0.0.3 produced PASS, one dataset row, and exactly one Actor Start and one Validation report event. Its cost displayed $0.000. This is event wiring evidence, not an external purchase, revenue, payout, or exact-zero-cost proof.
 
 Own-account invalid-input run ZynHh3jHWkJK3stEV logged INVALID_SPEC and produced zero dataset rows. Triggered events showed Actor Start 1 time and Validation report 0 times. This confirms the synthetic report event is excluded for invalid specifications in the active pricing configuration. No real customer payment was made.
+
+## Dataset view and Store prefill contract (2026-09-13)
+
+On the isolated `codex/apify-task-dataset-schema` branch, `npm test` passes 43/43. The local Apify SDK adapter now checks persisted PASS/FAIL rows against `.actor/dataset_schema.json` for minimal text, mixed JSON/CSV/text, JSON-schema failure, missing files, and unexpected files; INVALID_SPEC still produces no dataset row. The input-schema prefill is checked against the existing synthetic mixed-format PASS example. This verifies the local Actor contract and the dataset-view prerequisite for a possible task landing page; it is not an Apify cloud build, a published page, a user acceptance result, or paid-run evidence.

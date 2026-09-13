@@ -1,8 +1,16 @@
 {
   "title": "Delivery Check", "type": "object", "schemaVersion": 1,
   "properties": {
-    "requirements": { "title": "Required files", "type": "array", "description": "One rule per file: name, kind (text/json/csv), maxBytes; optional sha256, jsonSchema or csv headers/minRows/maxRows.", "editor": "json", "prefill": [{"name":"result.json","kind":"json","maxBytes":10000,"jsonSchema":{"type":"object","required":["ok"],"properties":{"ok":{"type":"boolean"}},"additionalProperties":false}}] },
-    "files": { "title": "File contents", "type": "array", "description": "Files as {name, content} with UTF-8 text content. Names are labels, not local paths or URLs. Maximum 32 files, 1 MiB each, 4 MiB total. Cloud inputs are stored by Apify; do not supply secrets.", "editor": "json", "prefill": [{"name":"result.json","content":"{\"ok\":true}"}] },
+    "requirements": { "title": "Required files", "type": "array", "description": "One rule per file: name, kind (text/json/csv), maxBytes; optional sha256, jsonSchema or csv headers/minRows/maxRows.", "editor": "json", "prefill": [
+      {"name":"result.json","kind":"json","maxBytes":10000,"jsonSchema":{"type":"object","required":["ok","count"],"properties":{"ok":{"type":"boolean"},"count":{"type":"integer","minimum":0}},"additionalProperties":false}},
+      {"name":"records.csv","kind":"csv","maxBytes":10000,"csv":{"headers":["id","name"],"minRows":2,"maxRows":2}},
+      {"name":"test-report.md","kind":"text","maxBytes":10000}
+    ] },
+    "files": { "title": "File contents", "type": "array", "description": "Files as {name, content} with UTF-8 text content. Names are labels, not local paths or URLs. Maximum 32 files, 1 MiB each, 4 MiB total. Cloud inputs are stored by Apify; do not supply secrets.", "editor": "json", "prefill": [
+      {"name":"result.json","content":"{\"ok\":true,\"count\":2}"},
+      {"name":"records.csv","content":"id,name\n1,Alice\n2,Bob\n"},
+      {"name":"test-report.md","content":"# Test record\nTwo synthetic records checked.\n"}
+    ] },
     "allowExtraFiles": { "title": "Allow files outside the required list", "type": "boolean", "description": "Extra files are rejected by default. Allowed extras are not checked against a contract.", "default": false }
   }, "required": ["requirements", "files"]
 }
