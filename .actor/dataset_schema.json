@@ -3,7 +3,7 @@
   "title": "Delivery validation reports",
   "description": "One dataset row is written for each valid PASS or FAIL report. INVALID_SPEC diagnostics stay in the OUTPUT key-value record and do not produce a dataset row.",
   "fields": {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Delivery validation report",
     "description": "Deterministic checks against the file requirements supplied for this run. PASS and FAIL are report outcomes; neither confirms content truth or client acceptance.",
     "type": "object",

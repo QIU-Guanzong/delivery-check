@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import Ajv2020 from 'ajv/dist/2020.js';
+import Ajv from 'ajv';
 import { checkBundle } from '../src/check.js';
 
 const run = promisify(execFile);
@@ -16,7 +16,9 @@ const datasetSchema = JSON.parse(await readFile(new URL('../.actor/dataset_schem
 const inputSchema = JSON.parse(await readFile(new URL('../.actor/input_schema.json', import.meta.url), 'utf8'));
 assert.equal(definition.storages.dataset, './dataset_schema.json');
 assert.ok(datasetSchema.views.overview, 'task publishing needs a dataset view');
-const validateDatasetRow = new Ajv2020({ allErrors: true, strict: false }).compile(datasetSchema.fields);
+assert.equal(datasetSchema.fields.$schema, 'http://json-schema.org/draft-07/schema#',
+  'Apify validates dataset fields against draft-07 during build');
+const validateDatasetRow = new Ajv({ allErrors: true, strict: false }).compile(datasetSchema.fields);
 const valid = { requirements: [{ name: 'a.txt', kind: 'text', maxBytes: 100 }],
   files: [{ name: 'a.txt', content: 'hello' }] };
 const passExample = JSON.parse(await readFile(new URL('../examples/pass.json', import.meta.url), 'utf8'));
