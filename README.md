@@ -118,6 +118,8 @@ The Store input form preloads the same synthetic JSON, CSV, and text PASS bundle
 
 The dataset view also meets the dataset-schema prerequisite for a public Apify Task landing page. Publishing that page still requires creating and saving a complete task configuration in Apify Console; this repository change does not publish a task or alter the live Actor.
 
+Two tested, synthetic task-page drafts are in [`examples/tasks/`](examples/tasks/): one for CSV header/row-count checks and one for JSON API response schemas. Their focused titles and descriptions are candidates for search/agent discovery. They omit the server-controlled publication fields; publishing is a separate account action and makes the sample inputs public.
+
 The hosted listing uses pay-per-event pricing, active September 11, 2026: $0.01 for one completed PASS or FAIL report (up to 32 files), plus $0.00005 per Actor start at the fixed 256 MiB memory setting. Platform usage is included. INVALID_SPEC writes diagnostics to OUTPUT but no dataset row, so only the start fee applies. The report charge uses Apify's synthetic default-dataset-item event; no additional custom report event is charged. Check the live Store pricing before running. The local CLI remains MIT licensed and has no service fee.
 
 ## Implementation

@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import Ajv2020 from 'ajv/dist/2020.js';
+import { checkBundle } from '../src/check.js';
 
 const run = promisify(execFile);
 const entry = fileURLToPath(new URL('../src/actor.js', import.meta.url));
@@ -27,10 +28,40 @@ const storePrefill = {
 assert.deepEqual(storePrefill, passExample, 'the Store prefill matches the tested mixed-format example');
 const withUnexpectedFile = { ...valid, files: [...valid.files, { name: 'extra.txt', content: 'synthetic' }] };
 
+const taskDrafts = [];
+for (const path of [
+  '../examples/tasks/csv-delivery-preflight.json',
+  '../examples/tasks/json-api-response-preflight.json',
+]) {
+  const draft = JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
+  taskDrafts.push(draft);
+  test(`Apify task draft ${draft.name} respects publishing limits and passes its synthetic input`, () => {
+    assert.match(draft.name, /^[a-z0-9-]{3,63}$/);
+    assert.ok(draft.title.length >= 3 && draft.title.length <= 63);
+    assert.ok(draft.description.length <= 400);
+    assert.ok(draft.publicConfig.seoTitle.length <= 60);
+    assert.ok(draft.publicConfig.seoDescription.length <= 160);
+    assert.equal(Object.hasOwn(draft, 'isPublic'), false);
+    assert.equal(Object.hasOwn(draft.publicConfig, 'publishedAt'), false);
+    assert.equal(draft.publicConfig.datasetName, null);
+    assert.equal(draft.publicConfig.datasetView, 'overview');
+    assert.deepEqual(draft.publicConfig.inputSchemaFields, ['requirements', 'files']);
+    assert.ok(draft.publicConfig.inputSchemaFields.every(field => inputSchema.properties[field]));
+    assert.ok(datasetSchema.views[draft.publicConfig.datasetView]);
+    assert.equal(draft.actId, '9GmfAyI0DFy5PSnjs');
+    assert.equal(checkBundle(draft.input).status, 'PASS');
+    assert.equal(draft.options.memoryMbytes, 256);
+    assert.equal(draft.options.timeoutSecs, 60);
+    assert.ok(draft.options.maxTotalChargeUsd > 0);
+    assert.ok(draft.options.maxTotalChargeUsd <= 0.02);
+  });
+}
+
 for (const [scenario, status, input] of [
   ['minimal text', 'PASS', valid],
   ['mixed JSON, CSV, and text', 'PASS', passExample],
   ['Store CSV and JSON prefill', 'PASS', storePrefill],
+  ...taskDrafts.map(draft => [draft.name, 'PASS', draft.input]),
   ['missing required file', 'FAIL', { ...valid, files: [] }],
   ['JSON schema failure and missing file', 'FAIL', failExample],
   ['unexpected extra file', 'FAIL', withUnexpectedFile],
