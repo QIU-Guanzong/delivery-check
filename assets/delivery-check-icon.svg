@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Delivery Check icon</title>
+  <desc id="desc">A dark navy data panel with a mint verification check.</desc>
+  <defs>
+    <linearGradient id="panel" x1="96" y1="80" x2="928" y2="944" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#12243B"/>
+      <stop offset="1" stop-color="#07111E"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="540" y1="308" x2="780" y2="718" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7DF1C3"/>
+      <stop offset="1" stop-color="#35C998"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1024" height="1024" rx="208" fill="#07101B"/>
+  <rect x="112" y="112" width="800" height="800" rx="136" fill="url(#panel)" stroke="#29435E" stroke-width="20"/>
+  <path d="M232 330h292M232 468h216M232 606h164" stroke="#587087" stroke-width="44" stroke-linecap="round"/>
+  <circle cx="696" cy="512" r="196" fill="#102B37" stroke="#2A6F69" stroke-width="20"/>
+  <path d="m586 516 76 78 178-188" fill="none" stroke="url(#accent)" stroke-width="62" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+</svg>

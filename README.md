@@ -1,5 +1,9 @@
 # Delivery Check
 
+<p align="right">
+  <img src="assets/delivery-check-icon.svg" width="96" alt="Delivery Check">
+</p>
+
 Check a small bundle before you submit it. Catch missing evidence, oversized files, changed hashes, invalid JSON and incorrect CSV layouts in one report.
 
 For developers and agents handing off text deliverables. The checker uses deterministic rules, with no model calls or external URL requests. A PASS means the supplied files meet the configured checks; it does not mean a customer accepted the work or that its content is true.
@@ -29,6 +33,15 @@ Open [Delivery Check on Apify](https://apify.com/grayt/delivery-check), sign in 
 The Store currently lists `$0.01` for each completed PASS/FAIL report and `$0.00005` per Actor start; platform usage is included. Invalid input still incurs the start fee. Check the [current pricing](https://apify.com/grayt/delivery-check/pricing) before running. Apify stores cloud inputs, so use synthetic data here and use the offline preview below for private files.
 
 To see a failed delivery report, use the synthetic [failing example](examples/fail.json). A completed Actor run means the checker ran; read the report's own `PASS`, `FAIL`, or `INVALID_SPEC` status before relying on it.
+
+### Start with a focused synthetic example
+
+For a narrower, preconfigured first run, use one of the public Task pages below. Both examples contain synthetic data only and expose just the inputs needed for that check.
+
+- [Check CSV headers and row counts before delivery](https://apify.com/grayt/delivery-check/examples/check-csv-headers-and-row-counts-before-delivery) validates an exact CSV header order and bounded data-row count.
+- [Validate a JSON API response before handoff](https://apify.com/grayt/delivery-check/examples/validate-a-json-api-response-before-handoff) validates required JSON fields and types against a bounded schema.
+
+Each Task uses a 60-second timeout, 256 MiB memory, and a maximum per-run charge of `$0.02`. Do not submit sensitive files: Apify stores cloud inputs. Use the offline preview below for private material.
 
 ## Offline browser preview
 
