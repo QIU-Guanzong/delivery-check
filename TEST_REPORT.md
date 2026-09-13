@@ -1,8 +1,16 @@
 # Test evidence
 
+## Latest local verification (2026-09-13)
+
+- `npm test`: 39 passed, 0 failed. This includes the core checker, HTTP adapter, ACP handler, local Apify adapter, and browser input validation tests.
+- CLI sample input `examples/pass.json` returned `PASS` with exit code 0 during this review. Existing failure and edge-case behavior remains covered by the automated tests below.
+- This is local functional evidence only. It does not demonstrate buyer demand, account eligibility, an external paid run, or a payout.
+
+## Prototype and platform history
+
 2026-09-11. Prototype 0.1.0, macOS arm64, Node 24.19.0 (also passed under Node 26.0.0, outside the supported range). The Node 22 cloud image built and ran successfully on Apify.
 
-- 21 automated tests passed. Coverage includes missing/duplicate/unexpected files, exact UTF-8 byte counts, known SHA-256 and mismatches, JSON syntax and schema errors, false boolean schemas, unsupported schemas, quoted CSV commas/newlines, CRLF/BOM, header order, row counts, malformed CSV, path-like names, limits, surrogate encoding and input immutability.
+- The original prototype's 21 automated tests covered missing/duplicate/unexpected files, exact UTF-8 byte counts, known SHA-256 and mismatches, JSON syntax and schema errors, false boolean schemas, unsupported schemas, quoted CSV commas/newlines, CRLF/BOM, header order, row counts, malformed CSV, path-like names, limits, surrogate encoding and input immutability. The latest 39-test count above supersedes that baseline.
 - CLI passing sample exited 0 with PASS; failing sample exited 1 with FAIL. The failing sample identifies an incorrectly typed JSON count and missing evidence file.
 - The existing RGB-to-Hex deliverable passed its required-file and 22,000-byte ceiling checks. This checks packaging only, not the HTML's behavior, accessibility or bounty acceptance. See `examples/rgb-size-report.json`.
 - The Apify SDK adapter ran locally with the passing sample. Status was PASS with three required files; key-value OUTPUT and dataset output were inspected and matched the core report.

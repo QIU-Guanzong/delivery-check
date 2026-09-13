@@ -4,6 +4,32 @@ Check a small bundle before you submit it. Catch missing evidence, oversized fil
 
 For developers and agents handing off text deliverables. The checker uses deterministic rules, with no model calls or external URL requests. A PASS means the supplied files meet the configured checks; it does not mean a customer accepted the work or that its content is true.
 
+## Try it on Apify
+
+Open [Delivery Check on Apify](https://apify.com/grayt/delivery-check), sign in if prompted, paste this small example into the JSON input, and start a run. The default dataset should show `PASS` for one file:
+
+```json
+{
+  "requirements": [
+    {
+      "name": "result.json",
+      "kind": "json",
+      "maxBytes": 1024,
+      "jsonSchema": {
+        "type": "object",
+        "required": ["ok"],
+        "properties": { "ok": { "type": "boolean" } }
+      }
+    }
+  ],
+  "files": [{ "name": "result.json", "content": "{\"ok\":true}" }]
+}
+```
+
+The Store currently lists `$0.01` for each completed PASS/FAIL report and `$0.00005` per Actor start; platform usage is included. Invalid input still incurs the start fee. Check the [current pricing](https://apify.com/grayt/delivery-check/pricing) before running. Apify stores cloud inputs, so use synthetic data here and use the offline preview below for private files.
+
+To see a failed delivery report, use the synthetic [failing example](examples/fail.json). A completed Actor run means the checker ran; read the report's own `PASS`, `FAIL`, or `INVALID_SPEC` status before relying on it.
+
 ## Offline browser preview
 
 [Download the browser preview](https://github.com/QIU-Guanzong/delivery-check/releases/download/browser-preview-0.1.0/delivery-check.html) · [Release notes](https://github.com/QIU-Guanzong/delivery-check/releases/tag/browser-preview-0.1.0)
@@ -22,16 +48,6 @@ This preview does not detect duplicate SKUs, check CSV business-field values, ma
 All assets and license notices are embedded in the HTML. The page has no network requests or application storage; its Content Security Policy blocks connections. AJV needs local dynamic code compilation for the bounded schema subset. Loaded file bytes preserve BOM and CRLF for hashing; editing the textarea changes the working content and its fingerprint. Invalid UTF-8 and oversized files are rejected. Clear removes the active file, rules and report.
 
 See [browser validation](web/VALIDATION.md). The published Apify cloud build and RapidAPI deployment status are separate from this local browser release.
-
-## Run online
-
-Open [Delivery Check on Apify](https://apify.com/grayt/delivery-check) to check a bundle without installing anything locally.
-
-1. Sign in to Apify and copy the [passing example](examples/pass.json) into the Actor's JSON input, or use the smaller input below. Replace the example with your own file contents and requirements when ready.
-2. Review the current Store pricing before starting. A completed PASS or FAIL report costs $0.01, plus the $0.00005 start fee at 256 MiB. Invalid input still incurs the start fee.
-3. Read the report's `status` and per-file checks in the dataset. For invalid-input diagnostics, open the `OUTPUT` record in the run's key-value store.
-
-Try the [failing example](examples/fail.json) to see how missing or incorrect files are reported. These examples use synthetic data. Cloud runs store your submitted input on Apify; use the local CLI below for files you need to keep on your own machine.
 
 ## Run locally
 
