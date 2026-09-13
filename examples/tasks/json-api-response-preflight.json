@@ -1,0 +1,40 @@
+{
+  "actId": "9GmfAyI0DFy5PSnjs",
+  "name": "json-api-response-preflight",
+  "title": "Validate a JSON API response before handoff",
+  "description": "Check a JSON API response's required fields and value types against a bounded JSON Schema before handing it off. Uses deterministic rules; no network calls.",
+  "input": {
+    "requirements": [
+      {
+        "name": "response.json",
+        "kind": "json",
+        "maxBytes": 10000,
+        "jsonSchema": {
+          "type": "object",
+          "required": ["status", "data"],
+          "properties": {
+            "status": { "type": "string", "enum": ["ok"] },
+            "data": {
+              "type": "object",
+              "required": ["count"],
+              "properties": { "count": { "type": "integer", "minimum": 0 } },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    ],
+    "files": [
+      { "name": "response.json", "content": "{\"status\":\"ok\",\"data\":{\"count\":2}}" }
+    ]
+  },
+  "options": { "memoryMbytes": 256, "timeoutSecs": 60, "maxTotalChargeUsd": 0.02 },
+  "publicConfig": {
+    "datasetName": null,
+    "seoTitle": "Validate a JSON API response against a schema",
+    "seoDescription": "Check required fields and JSON types in a response before delivery. No network calls; data is synthetic.",
+    "datasetView": "overview",
+    "inputSchemaFields": ["requirements", "files"]
+  }
+}

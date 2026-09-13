@@ -1,0 +1,30 @@
+{
+  "actId": "9GmfAyI0DFy5PSnjs",
+  "name": "csv-delivery-preflight",
+  "title": "Check CSV headers and row counts before delivery",
+  "description": "Check a CSV export's exact headers and data-row count before handing it to a client or downstream job. Uses deterministic rules and a synthetic sample.",
+  "input": {
+    "requirements": [
+      {
+        "name": "records.csv",
+        "kind": "csv",
+        "maxBytes": 10000,
+        "csv": { "headers": ["id", "name", "status"], "minRows": 2, "maxRows": 2 }
+      }
+    ],
+    "files": [
+      {
+        "name": "records.csv",
+        "content": "id,name,status\n1,Sample One,ready\n2,Sample Two,ready\n"
+      }
+    ]
+  },
+  "options": { "memoryMbytes": 256, "timeoutSecs": 60, "maxTotalChargeUsd": 0.02 },
+  "publicConfig": {
+    "datasetName": null,
+    "seoTitle": "Check CSV headers and row counts before delivery",
+    "seoDescription": "Check a CSV export's exact columns, row count, byte limit, and optional SHA-256 before handing it off.",
+    "datasetView": "overview",
+    "inputSchemaFields": ["requirements", "files"]
+  }
+}
