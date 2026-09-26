@@ -4,8 +4,15 @@
   "properties": {
     "dataset": {
       "type": "string",
-      "title": "Validation results",
-      "template": "{{links.apiDefaultDatasetUrl}}/items"
+      "title": "Validation summary",
+      "template": "{{links.apiDefaultDatasetUrl}}/items",
+      "description": "One row for PASS or FAIL, including a summary and what to fix. Invalid input creates no dataset row."
+    },
+    "diagnostics": {
+      "type": "string",
+      "title": "Full report and input diagnostics",
+      "description": "Open OUTPUT for the JSON report, including invalid-input diagnostics. REPORT.txt is a readable text summary.",
+      "template": "{{links.apiDefaultKeyValueStoreUrl}}/keys"
     }
   }
 }

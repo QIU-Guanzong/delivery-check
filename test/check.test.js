@@ -43,3 +43,122 @@ test('file count, size and nesting are bounded', () => {
 });
 test('unpaired surrogate cannot pass UTF-8 check; emoji can', () => { assert.equal(checkBundle(bundle({},'\ud800')).status,'FAIL'); assert.equal(checkBundle(bundle({},'😀')).status,'PASS'); });
 test('input objects are not modified', () => { const b=bundle({kind:'json',jsonSchema:{type:'object',properties:{n:{type:'integer',default:3}}}},'{}'); const before=JSON.stringify(b); checkBundle(b); assert.equal(JSON.stringify(b),before); });
+
+const check = (report, code) => report.files[0].checks.find(item => item.code === code);
+
+test('invalid configuration identifies the field and expected type without echoing its value', () => {
+  const missing = bundle();
+  delete missing.requirements[0].maxBytes;
+  assert.match(checkBundle(missing).issues[0].message, /Add the required field at \/requirements\/0\/maxBytes/);
+  const wrongType = checkBundle(bundle({ maxBytes: 'private value' }));
+  assert.equal(wrongType.status, 'INVALID_SPEC');
+  assert.match(wrongType.issues[0].message, /Expected integer at \/requirements\/0\/maxBytes/);
+  assert.ok(!JSON.stringify(wrongType).includes('private value'));
+});
+
+test('missing files and byte limits provide a concrete repair target', () => {
+  const missing = bundle(); missing.files = [];
+  assert.deepEqual(check(checkBundle(missing), 'PRESENT'), {
+    code: 'PRESENT', passed: false, message: 'Add the required file named "a.txt".', details: { fileName: 'a.txt' },
+  });
+  const oversized = check(checkBundle(bundle({ maxBytes: 5 }, '中文')), 'MAX_BYTES');
+  assert.deepEqual(oversized.details, { actualBytes: 6, maxBytes: 5 });
+  assert.match(oversized.message, /6 UTF-8 bytes; the limit is 5/);
+});
+
+test('successful checks retain the original code and passed shape', () => {
+  for (const input of [bundle(), bundle({ kind: 'json', jsonSchema: { type: 'object' } }, '{}'),
+    bundle({ kind: 'csv', csv: { headers: ['id'], minRows: 1, maxRows: 1 } }, 'id\n1')]) {
+    const report = checkBundle(input);
+    assert.equal(report.status, 'PASS');
+    assert.ok(report.files[0].checks.every(item => Object.keys(item).join(',') === 'code,passed'));
+  }
+});
+
+test('JSON syntax diagnostics locate the error without quoting content', () => {
+  const report = checkBundle(bundle({ kind: 'json' }, '{\n"secret": "private-value"\n"ok": true}'));
+  const failure = check(report, 'JSON_PARSE');
+  assert.deepEqual(failure.details, { errorCode: 'INVALID_JSON', line: 3, column: 1 });
+  assert.match(failure.message, /line 3, column 1/);
+  assert.ok(!JSON.stringify(report).includes('private-value'));
+  // V8 can quote most of a short malformed document in its error text.
+  const short = checkBundle(bundle({ kind: 'json' }, 'private-value'));
+  assert.equal(check(short, 'JSON_PARSE').details.errorCode, 'INVALID_JSON');
+  assert.ok(!JSON.stringify(short).includes('private-value'));
+});
+
+test('JSON nesting failures are distinct from syntax failures', () => {
+  const content = '['.repeat(50) + '0' + ']'.repeat(50);
+  const failure = check(checkBundle(bundle({ kind: 'json', maxBytes: 200 }, content)), 'JSON_PARSE');
+  assert.deepEqual(failure.details, { errorCode: 'JSON_DEPTH_LIMIT' });
+  assert.match(failure.message, /48 levels/);
+});
+
+test('JSON schema diagnostics locate missing and incorrectly typed properties', () => {
+  const rule = { kind: 'json', jsonSchema: { type: 'object', properties: { 'a/b~c': { type: 'boolean' } }, required: ['a/b~c'] } };
+  const missing = checkBundle(bundle(rule, '{}'));
+  assert.deepEqual(check(missing, 'JSON_SCHEMA').details, { path: '/a~1b~0c', keyword: 'required' });
+  assert.match(check(missing, 'JSON_SCHEMA').message, /Add the required field/);
+  assert.equal(missing.files[0].schemaError.path, '/', 'existing schemaError shape is retained');
+  const wrongType = checkBundle(bundle(rule, '{"a/b~c":"private-value"}'));
+  assert.deepEqual(check(wrongType, 'JSON_SCHEMA').details, { path: '/a~1b~0c', keyword: 'type' });
+  assert.match(check(wrongType, 'JSON_SCHEMA').message, /Expected boolean/);
+  assert.ok(!JSON.stringify(wrongType).includes('private-value'));
+});
+
+test('JSON schema diagnostic paths are bounded', () => {
+  const key = 'x'.repeat(600);
+  const report = checkBundle(bundle({ kind: 'json', jsonSchema: { type: 'object', properties: { [key]: { type: 'boolean' } } }, maxBytes: 1000 }, JSON.stringify({ [key]: 1 })));
+  const failure = check(report, 'JSON_SCHEMA');
+  assert.equal(failure.details.path.length, 256);
+  assert.ok(failure.details.path.endsWith('…'));
+  assert.ok(failure.message.length < 400);
+});
+
+test('CSV header and row failures show the contract and observed values without content rows', () => {
+  const rule = { kind: 'csv', csv: { headers: ['id', 'name'], minRows: 2 } };
+  const report = checkBundle(bundle(rule, 'name,id\nprivate-value,1\n'));
+  assert.deepEqual(check(report, 'CSV_HEADERS').details, {
+    expectedHeaders: ['id', 'name'], actualHeaders: ['name', 'id'],
+    expectedHeaderCount: 2, actualHeaderCount: 2, headersTruncated: false,
+  });
+  assert.deepEqual(check(report, 'MIN_ROWS').details, { actualRows: 1, minRows: 2 });
+  assert.ok(!JSON.stringify(report).includes('private-value'));
+  const tooMany = checkBundle(bundle({ kind: 'csv', csv: { headers: ['id'], maxRows: 0 } }, 'id\n1\n'));
+  assert.deepEqual(check(tooMany, 'MAX_ROWS').details, { actualRows: 1, maxRows: 0 });
+});
+
+test('CSV header previews cap both the number and length of header names', () => {
+  const headers = Array.from({ length: 25 }, (_, index) => `${index}${'x'.repeat(180)}`);
+  const report = checkBundle(bundle({ kind: 'csv', csv: { headers }, maxBytes: 10000 }, [...headers].reverse().join(',')));
+  const details = check(report, 'CSV_HEADERS').details;
+  assert.equal(details.expectedHeaderCount, 25);
+  assert.equal(details.actualHeaderCount, 25);
+  assert.equal(details.expectedHeaders.length, 20);
+  assert.equal(details.actualHeaders.length, 20);
+  assert.ok([...details.expectedHeaders, ...details.actualHeaders].every(header => header.length <= 120));
+  assert.equal(details.headersTruncated, true);
+});
+
+test('CSV parse diagnostics use stable codes and line numbers without record content', () => {
+  for (const [content, errorCode] of [
+    ['a,b\nprivate-value,1,2', 'CSV_RECORD_INCONSISTENT_FIELDS_LENGTH'],
+    ['a,b\n"private-value,1', 'CSV_QUOTE_NOT_CLOSED'],
+    ['a,b\nprivate"-value,1', 'INVALID_OPENING_QUOTE'],
+  ]) {
+    const report = checkBundle(bundle({ kind: 'csv', csv: { headers: ['a', 'b'] } }, content));
+    const failure = check(report, 'CSV_PARSE');
+    assert.deepEqual(failure.details, { errorCode, line: 2 });
+    assert.match(failure.message, /line 2/);
+    assert.ok(!JSON.stringify(report).includes('private'));
+  }
+});
+
+test('hash failure guidance does not repeat expected or actual digests', () => {
+  const report = checkBundle(bundle({ sha256: '0'.repeat(64) }));
+  const failure = check(report, 'SHA256_MATCH');
+  assert.match(failure.message, /file version/);
+  assert.ok(!failure.message.includes('0'.repeat(64)));
+  assert.ok(!failure.message.includes(report.files[0].sha256));
+  assert.equal(failure.details, undefined);
+});

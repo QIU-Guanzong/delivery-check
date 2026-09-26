@@ -4,35 +4,37 @@
   <img src="assets/delivery-check-icon.svg" width="96" alt="Delivery Check">
 </p>
 
-Check a small bundle before you submit it. Catch missing evidence, oversized files, changed hashes, invalid JSON and incorrect CSV layouts in one report.
+Validate a JSON response, CSV export or text handoff before it reaches the next step. Get a PASS/FAIL result, a list of failed checks and a readable report showing what to fix.
 
-For developers and agents handing off text deliverables. The checker uses deterministic rules, with no model calls or external URL requests. A PASS means the supplied files meet the configured checks; it does not mean a customer accepted the work or that its content is true.
+Use it to check required files, exact CSV columns and row counts, JSON field types, byte limits and SHA-256 fingerprints. The checks are deterministic: no model calls or external URL requests. PASS means the supplied contents match your rules; it does not establish content truth or customer acceptance.
 
 ## Try it on Apify
 
-Open [Delivery Check on Apify](https://apify.com/grayt/delivery-check), sign in if prompted, paste this small example into the JSON input, and start a run. The default dataset should show `PASS` for one file:
+1. Open [Delivery Check](https://apify.com/grayt/delivery-check). The form includes a synthetic JSON, CSV and text example.
+2. Under **File contents**, enter each filename and paste its text directly. Match the names to **Required files** and edit the rules you need. The JSON editor remains available for API-style input.
+3. Run the check. Read **Validation summary** for the result and **What to fix** for failures. **Full report and input diagnostics** contains `OUTPUT` (JSON) and `REPORT.txt` (readable text).
+
+| Result | Meaning | Next step |
+| --- | --- | --- |
+| PASS | All configured checks passed. | Use the report alongside your own acceptance checks. |
+| FAIL | The input was valid, but one or more file checks failed. | Fix the listed files and check again. |
+| INVALID_SPEC | The rules or input structure need correction. | Open the diagnostics output. No validation dataset row is created. |
+
+The Store lists `$0.01` per completed PASS/FAIL report (up to 32 files), plus `$0.00005` per Actor start, with platform usage included. A run that returns INVALID_SPEC incurs the start fee but no report event. Input rejected by Apify before a run starts produces neither a run nor an OUTPUT record. Check [current pricing](https://apify.com/grayt/delivery-check/pricing) before running. Apify stores cloud inputs; use synthetic or non-sensitive material. For private files, use the offline preview below.
+
+For the API, the bundle shape is unchanged:
 
 ```json
 {
-  "requirements": [
-    {
-      "name": "result.json",
-      "kind": "json",
-      "maxBytes": 1024,
-      "jsonSchema": {
-        "type": "object",
-        "required": ["ok"],
-        "properties": { "ok": { "type": "boolean" } }
-      }
-    }
-  ],
-  "files": [{ "name": "result.json", "content": "{\"ok\":true}" }]
+  "requirements": [{
+    "name": "result.json", "kind": "json", "maxBytes": 1024,
+    "jsonSchema": {"type": "object", "required": ["ok"], "properties": {"ok": {"type": "boolean"}}}
+  }],
+  "files": [{"name": "result.json", "content": "{\"ok\":true}"}]
 }
 ```
 
-The Store currently lists `$0.01` for each completed PASS/FAIL report and `$0.00005` per Actor start; platform usage is included. Invalid input still incurs the start fee. Check the [current pricing](https://apify.com/grayt/delivery-check/pricing) before running. Apify stores cloud inputs, so use synthetic data here and use the offline preview below for private files.
-
-To see a failed delivery report, use the synthetic [failing example](examples/fail.json). A completed Actor run means the checker ran; read the report's own `PASS`, `FAIL`, or `INVALID_SPEC` status before relying on it.
+See the synthetic [passing](examples/pass.json) and [failing](examples/fail.json) bundles. A successful Actor run means the checker ran; read the report's status to decide whether the files passed.
 
 ### Start with a focused synthetic example
 
@@ -115,9 +117,9 @@ JSON schemas are limited to 16,000 characters and 12 schema levels. Common type,
 
 ## Results
 
-The report separates `PASS`, `FAIL` and `INVALID_SPEC`. Each required file lists checks, byte size and SHA-256. JSON schema failures include the offending field path and rule. Reports do not echo whole file bodies, but names, hashes and field paths may still be sensitive.
+The report separates `PASS`, `FAIL` and `INVALID_SPEC`. Each required file lists checks, byte size and SHA-256. Failed checks include a repair message and bounded diagnostics: byte and row counts, CSV header differences, parser location where available, and JSON schema paths. Parser messages and CSV data rows are not echoed. Names, headers, hashes and field paths can still be sensitive.
 
-See [sample output](examples/pass-report.json) and [failure output](examples/fail-report.json). On Apify, the full report is saved as key-value record `OUTPUT`; PASS and FAIL produce one dataset row with the per-file checks. INVALID_SPEC produces no dataset row; read `OUTPUT` for its diagnostics. A successful Actor run can contain a FAIL report: the checker ran successfully and found a failed delivery. Check the report's status rather than the Actor process status.
+See [sample output](examples/pass-report.json) and [failure output](examples/fail-report.json). On Apify, the full report is saved as key-value record `OUTPUT`; PASS and FAIL produce one dataset row with the per-file checks. INVALID_SPEC produces no dataset row; open **Full report and input diagnostics** for `OUTPUT` and `REPORT.txt`. A successful Actor run can contain a FAIL report: the checker ran successfully and found a failed delivery. Check the report's status rather than the Actor process status.
 
 ## Privacy and cloud use
 
@@ -133,7 +135,7 @@ The dataset view also meets the dataset-schema prerequisite for a public Apify T
 
 Two tested, synthetic task-page drafts are in [`examples/tasks/`](examples/tasks/): one for CSV header/row-count checks and one for JSON API response schemas. Their focused titles and descriptions are candidates for search/agent discovery. They omit the server-controlled publication fields; publishing is a separate account action and makes the sample inputs public.
 
-The hosted listing uses pay-per-event pricing, active September 11, 2026: $0.01 for one completed PASS or FAIL report (up to 32 files), plus $0.00005 per Actor start at the fixed 256 MiB memory setting. Platform usage is included. INVALID_SPEC writes diagnostics to OUTPUT but no dataset row, so only the start fee applies. The report charge uses Apify's synthetic default-dataset-item event; no additional custom report event is charged. Check the live Store pricing before running. The local CLI remains MIT licensed and has no service fee.
+The hosted listing uses pay-per-event pricing, active September 11, 2026: $0.01 for one completed PASS or FAIL report (up to 32 files), plus $0.00005 per Actor start at the fixed 256 MiB memory setting. Platform usage is included. A started run returning INVALID_SPEC writes diagnostics to OUTPUT but no dataset row, so only the start fee applies. Input rejected before startup has no run or report. The report charge uses Apify's synthetic default-dataset-item event; no additional custom report event is charged. Check the live Store pricing before running. The local CLI remains MIT licensed and has no service fee.
 
 ## Implementation
 
@@ -153,6 +155,6 @@ The hosted [Apify MCP server](https://github.com/apify/apify-mcp-server) can exp
 https://mcp.apify.com?tools=grayt/delivery-check
 ```
 
-Use `fetch-actor-details` with `actor: "grayt/delivery-check"` on the general Apify MCP server to inspect the input contract first. After a run, use the returned dataset ID with `get-dataset-items`. If the dataset is empty, retrieve the `OUTPUT` record from the run's default key-value store for invalid-input diagnostics. Cloud storage and runtime usage still apply.
+Use `fetch-actor-details` with `actor: "grayt/delivery-check"` on the general Apify MCP server to inspect the input contract first. After a run, use the returned dataset ID with `get-dataset-items` and read its `summary` and `failures` fields. If the dataset is empty, retrieve the `OUTPUT` record from the run's default key-value store for invalid-input diagnostics. Cloud storage and runtime usage still apply.
 
 On 2026-09-11, public MCP discovery returned this Actor's input and inferred output schemas. The listing now exposes PAY_PER_EVENT pricing through MCP. Authenticated MCP execution and external paid calls have not been tested; no customer revenue or payout is claimed.

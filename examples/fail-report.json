@@ -26,7 +26,12 @@
         },
         {
           "code": "JSON_SCHEMA",
-          "passed": false
+          "passed": false,
+          "message": "Expected integer at /count.",
+          "details": {
+            "path": "/count",
+            "keyword": "type"
+          }
         }
       ],
       "bytes": 15,
@@ -44,7 +49,11 @@
       "checks": [
         {
           "code": "PRESENT",
-          "passed": false
+          "passed": false,
+          "message": "Add the required file named \"test-report.md\".",
+          "details": {
+            "fileName": "test-report.md"
+          }
         }
       ],
       "status": "FAIL"
