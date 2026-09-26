@@ -8,13 +8,24 @@
     "description": "Deterministic checks against the file requirements supplied for this run. PASS and FAIL are report outcomes; neither confirms content truth or client acceptance.",
     "type": "object",
     "additionalProperties": false,
-    "required": ["status", "totalBytes", "requiredFiles", "failedFiles", "issues", "files", "notChecked"],
+    "required": [
+      "status",
+      "totalBytes",
+      "requiredFiles",
+      "failedFiles",
+      "issues",
+      "files",
+      "notChecked"
+    ],
     "properties": {
       "status": {
         "type": "string",
         "title": "Report status",
         "description": "PASS when every configured rule passes; otherwise FAIL. Invalid specifications are returned separately in OUTPUT.",
-        "enum": ["PASS", "FAIL"],
+        "enum": [
+          "PASS",
+          "FAIL"
+        ],
         "example": "PASS"
       },
       "totalBytes": {
@@ -45,10 +56,21 @@
         "items": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["name", "code"],
+          "required": [
+            "name",
+            "code"
+          ],
           "properties": {
-            "name": { "type": "string", "title": "File name", "example": "notes.txt" },
-            "code": { "type": "string", "title": "Issue code", "example": "UNEXPECTED_FILE" }
+            "name": {
+              "type": "string",
+              "title": "File name",
+              "example": "notes.txt"
+            },
+            "code": {
+              "type": "string",
+              "title": "Issue code",
+              "example": "UNEXPECTED_FILE"
+            }
           }
         },
         "example": []
@@ -60,38 +82,177 @@
         "items": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["name", "kind", "checks", "status"],
+          "required": [
+            "name",
+            "kind",
+            "checks",
+            "status"
+          ],
           "properties": {
-            "name": { "type": "string", "title": "File name", "example": "result.json" },
-            "kind": { "type": "string", "title": "Parser", "enum": ["text", "json", "csv"], "example": "json" },
+            "name": {
+              "type": "string",
+              "title": "File name",
+              "example": "result.json"
+            },
+            "kind": {
+              "type": "string",
+              "title": "Parser",
+              "enum": [
+                "text",
+                "json",
+                "csv"
+              ],
+              "example": "json"
+            },
             "checks": {
               "type": "array",
               "title": "Rule results",
               "items": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": ["code", "passed"],
+                "required": [
+                  "code",
+                  "passed"
+                ],
                 "properties": {
-                  "code": { "type": "string", "title": "Rule", "example": "JSON_SCHEMA" },
-                  "passed": { "type": "boolean", "title": "Passed", "example": true }
+                  "code": {
+                    "type": "string",
+                    "title": "Rule",
+                    "example": "JSON_SCHEMA"
+                  },
+                  "passed": {
+                    "type": "boolean",
+                    "title": "Passed",
+                    "example": true
+                  },
+                  "message": {
+                    "type": "string",
+                    "title": "How to fix"
+                  },
+                  "details": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "fileName": {
+                        "type": "string"
+                      },
+                      "actualBytes": {
+                        "type": "integer"
+                      },
+                      "maxBytes": {
+                        "type": "integer"
+                      },
+                      "actualRows": {
+                        "type": "integer"
+                      },
+                      "minRows": {
+                        "type": "integer"
+                      },
+                      "maxRows": {
+                        "type": "integer"
+                      },
+                      "expectedHeaders": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "string",
+                          "maxLength": 120
+                        }
+                      },
+                      "actualHeaders": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "string",
+                          "maxLength": 120
+                        }
+                      },
+                      "expectedHeaderCount": {
+                        "type": "integer"
+                      },
+                      "actualHeaderCount": {
+                        "type": "integer"
+                      },
+                      "headersTruncated": {
+                        "type": "boolean"
+                      },
+                      "errorCode": {
+                        "type": "string"
+                      },
+                      "line": {
+                        "type": "integer"
+                      },
+                      "column": {
+                        "type": "integer"
+                      },
+                      "path": {
+                        "type": "string"
+                      },
+                      "keyword": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
               }
             },
-            "bytes": { "type": "integer", "minimum": 0, "title": "File bytes", "description": "Present when file content was supplied.", "example": 21 },
-            "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$", "title": "SHA-256", "description": "Fingerprint of the exact UTF-8 file contents; omitted when the file is missing.", "example": "dd374af7e3d00d3e395e4a6a2ff9359f7f02af33e45f7cfe333a96a642ebc8ce" },
-            "rows": { "type": "integer", "minimum": 0, "title": "CSV data rows", "description": "Present for successfully parsed CSV files.", "example": 2 },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0,
+              "title": "File bytes",
+              "description": "Present when file content was supplied.",
+              "example": 21
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "title": "SHA-256",
+              "description": "Fingerprint of the exact UTF-8 file contents; omitted when the file is missing.",
+              "example": "dd374af7e3d00d3e395e4a6a2ff9359f7f02af33e45f7cfe333a96a642ebc8ce"
+            },
+            "rows": {
+              "type": "integer",
+              "minimum": 0,
+              "title": "CSV data rows",
+              "description": "Present for successfully parsed CSV files.",
+              "example": 2
+            },
             "schemaError": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["path", "keyword", "message"],
+              "required": [
+                "path",
+                "keyword",
+                "message"
+              ],
               "title": "JSON schema diagnostic",
               "properties": {
-                "path": { "type": "string", "title": "Field path", "example": "/count" },
-                "keyword": { "type": "string", "title": "Schema rule", "example": "type" },
-                "message": { "type": "string", "title": "Diagnostic", "example": "must be integer" }
+                "path": {
+                  "type": "string",
+                  "title": "Field path",
+                  "example": "/count"
+                },
+                "keyword": {
+                  "type": "string",
+                  "title": "Schema rule",
+                  "example": "type"
+                },
+                "message": {
+                  "type": "string",
+                  "title": "Diagnostic",
+                  "example": "must be integer"
+                }
               }
             },
-            "status": { "type": "string", "title": "File status", "enum": ["PASS", "FAIL"], "example": "PASS" }
+            "status": {
+              "type": "string",
+              "title": "File status",
+              "enum": [
+                "PASS",
+                "FAIL"
+              ],
+              "example": "PASS"
+            }
           }
         }
       },
@@ -99,20 +260,71 @@
         "type": "array",
         "title": "Out-of-scope checks",
         "description": "Claims the checker deliberately does not make, including truthfulness, subjective acceptance, malware, HTML rendering/accessibility, and payment eligibility.",
-        "items": { "type": "string" },
-        "example": ["content truthfulness", "subjective acceptance", "malware analysis", "HTML rendering/accessibility", "payment eligibility"]
+        "items": {
+          "type": "string"
+        },
+        "example": [
+          "content truthfulness",
+          "subjective acceptance",
+          "malware analysis",
+          "HTML rendering/accessibility",
+          "payment eligibility"
+        ]
+      },
+      "summary": {
+        "type": "string",
+        "title": "Summary",
+        "description": "A plain-language result of this validation run."
+      },
+      "failures": {
+        "type": "array",
+        "title": "What to fix",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "file",
+            "code",
+            "message"
+          ],
+          "properties": {
+            "file": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            },
+            "details": {
+              "$ref": "#/properties/files/items/properties/checks/items/properties/details"
+            }
+          }
+        }
       }
     }
   },
   "views": {
     "overview": {
       "title": "Validation report",
-      "description": "Review the overall result first, then expand the per-file checks and issues.",
+      "description": "Read the summary and What to fix before expanding the full per-file checks.",
       "transformation": {
-        "fields": ["status", "failedFiles", "requiredFiles", "totalBytes", "issues", "files", "notChecked"],
+        "fields": [
+          "status",
+          "summary",
+          "failures",
+          "failedFiles",
+          "requiredFiles",
+          "totalBytes",
+          "issues",
+          "files"
+        ],
         "desc": true
       },
-      "display": { "component": "table" }
+      "display": {
+        "component": "table"
+      }
     }
   }
 }

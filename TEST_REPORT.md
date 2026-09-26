@@ -1,6 +1,14 @@
 # Test evidence
 
-## Latest local verification (2026-09-13)
+## Guided Apify reports (2026-09-26)
+
+- Node 22.23.3: all 64 tests passed after the review fixes. The standalone browser bundle also builds.
+- The real Apify SDK was run locally against isolated synthetic storage for PASS, FAIL and INVALID_SPEC. All produce OUTPUT and REPORT.txt; PASS/FAIL each produce one schema-valid dataset row, INVALID_SPEC produces zero. This verifies storage/event inputs, not a live billing transaction.
+- Eleven new core regressions cover repair guidance, bounded diagnostics and parser-error privacy. Four additional Actor cases/checks cover CSV failures, structured input validation, discoverable diagnostics and a runtime-invalid rule accepted by the platform input schema. Two report regressions cover control-character injection in JSON field names and unexpected extra files. Saved public tasks retain their bundle input shape.
+- The supported Node 22/24 CI matrix is defined in `.github/workflows/test.yml`; cloud CI results are separate from local evidence.
+- Cloud deployment and browser acceptance of the schemaBased form remain pending. The public Actor still reports build 0.0.8 at the last readback; a pushed source branch is not a deployed upgrade. No pricing change, paid run or customer data was used.
+
+## Prior local verification (2026-09-13)
 
 - `npm test`: 43 passed, 0 failed under Node 26.0.0. This includes the core checker, HTTP adapter, ACP handler, local Apify adapter, browser input validation, the Store prefill, and schema-valid dataset rows.
 - CLI sample input `examples/pass.json` returned `PASS` with exit code 0 during this review. Existing failure and edge-case behavior remains covered by the automated tests below.

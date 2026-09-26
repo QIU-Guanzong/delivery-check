@@ -19,6 +19,7 @@ assert.ok(datasetSchema.views.overview, 'task publishing needs a dataset view');
 assert.equal(datasetSchema.fields.$schema, 'http://json-schema.org/draft-07/schema#',
   'Apify validates dataset fields against draft-07 during build');
 const validateDatasetRow = new Ajv({ allErrors: true, strict: false }).compile(datasetSchema.fields);
+const validateStoreInput = new Ajv({ strict: false }).compile(inputSchema);
 const valid = { requirements: [{ name: 'a.txt', kind: 'text', maxBytes: 100 }],
   files: [{ name: 'a.txt', content: 'hello' }] };
 const passExample = JSON.parse(await readFile(new URL('../examples/pass.json', import.meta.url), 'utf8'));
@@ -28,7 +29,11 @@ const storePrefill = {
   files: inputSchema.properties.files.prefill,
 };
 assert.deepEqual(storePrefill, passExample, 'the Store prefill matches the tested mixed-format example');
+assert.ok(validateStoreInput(storePrefill), JSON.stringify(validateStoreInput.errors));
 const withUnexpectedFile = { ...valid, files: [...valid.files, { name: 'extra.txt', content: 'synthetic' }] };
+const invalidAtRuntime = { ...valid, requirements: [{ ...valid.requirements[0], maxBytes: 0 }] };
+assert.ok(validateStoreInput(invalidAtRuntime), 'this invalid rule reaches the Actor through the platform input schema');
+assert.equal(checkBundle(invalidAtRuntime).status, 'INVALID_SPEC');
 
 const taskDrafts = [];
 for (const path of [
@@ -67,7 +72,12 @@ for (const [scenario, status, input] of [
   ['missing required file', 'FAIL', { ...valid, files: [] }],
   ['JSON schema failure and missing file', 'FAIL', failExample],
   ['unexpected extra file', 'FAIL', withUnexpectedFile],
+  ['CSV headers and row limits', 'FAIL', {
+    requirements: [{ name: 'rows.csv', kind: 'csv', maxBytes: 1000, csv: { headers: ['id', 'name'], minRows: 2 } }],
+    files: [{ name: 'rows.csv', content: 'name,id\nPRIVATE-CELL,1\n' }],
+  }],
   ['invalid specification', 'INVALID_SPEC', {}],
+  ['invalid rule accepted by platform input schema', 'INVALID_SPEC', invalidAtRuntime],
 ]) {
   test(`local Apify adapter: ${scenario} writes schema-valid ${status} output`, async () => {
     const dir = await mkdtemp(join(tmpdir(), 'delivery-check-actor-'));
@@ -83,6 +93,10 @@ for (const [scenario, status, input] of [
       await run(process.execPath, [entry], { cwd: dir, env, timeout: 20_000 });
       const report = JSON.parse(await readFile(join(kv, 'OUTPUT.json'), 'utf8'));
       assert.equal(report.status, status);
+      const text = await readFile(join(kv, 'REPORT.txt'), 'utf8');
+      assert.ok(text.startsWith(`Delivery Check: ${status}\n`));
+      assert.ok(!text.includes('PRIVATE-CELL'), 'readable report must not include CSV cell contents');
+      assert.equal(text.includes('What to fix'), status !== 'PASS');
       const dataset = join(dir, 'datasets', 'default');
       const paths = await readdir(dataset).catch(error => {
         if (error.code === 'ENOENT') return [];
@@ -94,6 +108,13 @@ for (const [scenario, status, input] of [
         const row = JSON.parse(await readFile(join(dataset, rows[0]), 'utf8'));
         assert.equal(row.status, status);
         assert.ok(validateDatasetRow(row), JSON.stringify(validateDatasetRow.errors));
+        assert.equal(row.failures.length > 0, status === 'FAIL');
+        assert.ok(row.summary.length > 0);
+        if (scenario === 'CSV headers and row limits') {
+          assert.deepEqual(row.failures.find(f => f.code === 'CSV_HEADERS').details.expectedHeaders, ['id', 'name']);
+          assert.match(text, /Expected headers: \["id","name"\]/);
+          assert.match(text, /Actual headers: \["name","id"\]/);
+        }
       } else {
         assert.ok(report.issues.length > 0, 'Invalid input retains actionable diagnostics');
       }
@@ -102,3 +123,18 @@ for (const [scenario, status, input] of [
     }
   });
 }
+
+test('structured file inputs preserve the bundle API and reject invalid filenames before running', () => {
+  assert.equal(inputSchema.properties.files.editor, 'schemaBased');
+  assert.equal(inputSchema.properties.files.items.properties.content.editor, 'textarea');
+  assert.ok(validateStoreInput(valid));
+  assert.ok(validateStoreInput({ ...valid, files: [{ name: 'a.txt', content: '' }] }));
+  assert.ok(!validateStoreInput({ ...valid, files: [{ name: '../secret', content: '' }] }));
+  assert.ok(!validateStoreInput({ ...valid, files: [{ name: 'a.txt', content: 3 }] }));
+});
+
+test('output discovery includes the key-value store with invalid-input diagnostics', async () => {
+  const output = JSON.parse(await readFile(new URL('../.actor/output_schema.json', import.meta.url), 'utf8'));
+  assert.equal(output.properties.dataset.template, '{{links.apiDefaultDatasetUrl}}/items');
+  assert.equal(output.properties.diagnostics.template, '{{links.apiDefaultKeyValueStoreUrl}}/keys');
+});
